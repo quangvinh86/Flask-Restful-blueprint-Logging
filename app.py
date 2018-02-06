@@ -1,19 +1,23 @@
 from flask import Flask
 from api.HelloWorld import api_v1_bp
+from api.PlaylistAPI import bp_playlist
 from Logger import logger, LogLevel, TraceException
-
+from flask_sqlalchemy import SQLAlchemy
+from Database import db
+import os
 
 app = Flask(__name__)
+path_file = os.path.abspath(os.path.dirname(__file__)) + "/chinook.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + path_file
+db.init_app(app)
 app.register_blueprint(api_v1_bp, url_prefix='/api')
-
-# logger = None
-
+app.register_blueprint(bp_playlist, url_prefix='/api')
 
 @app.route('/')
 def hello():
     logger.log(LogLevel.INFO, 'xin chao, toi la python')
     try:
-        a = 1/0
+        name = 10/3
     except Exception as ex:
         trace = TraceException(ex.__str__())
         logger.log(LogLevel.ERROR, trace.message)
